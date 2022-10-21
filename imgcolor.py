@@ -25,7 +25,8 @@ for img in os.listdir(pathG):
   img=load_img(img,target_size=(100,100))
   img = color.rgb2gray(img)
   img=img_to_array(img)/ 255
-
+  imshow(img)
+  plt.show()
  
   
   imagesG.append(img)
@@ -106,6 +107,10 @@ print(outputLAB)
 rgbimg=lab2rgb(outputLAB)
 rgbimg=rgbimg
 print(rgbimg)
+imshow(ABimg[:,:,0])
+plt.show()
+imshow(ABimg[:,:,1])
+plt.show()
 imshow(rgbimg)
 plt.show()
 

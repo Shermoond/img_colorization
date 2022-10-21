@@ -18,19 +18,20 @@ from PIL import Image, ImageFile
 import keras
 import cv2 as cv2
 
-pathG="C:\\Users\\lstat\\source\\repos\\Personal Assistant\\img_colorization\\gray\\"
+pathG="C:\\Users\\llabr\\colour\\img_colorization\\color\\"
 imagesG=[]
 for img in os.listdir(pathG):
   img=pathG+img
   img=load_img(img,target_size=(100,100))
   img = color.rgb2gray(img)
   img=img_to_array(img)/ 255
-  imshow(img)
-  plt.show()
+  #imshow(img)
+  #plt.show()
+
  
   
   imagesG.append(img)
-pathC="C:\\Users\\lstat\\source\\repos\\Personal Assistant\\img_colorization\\color\\"
+pathC="C:\\Users\\llabr\\colour\\img_colorization\\color\\"
 imagesC=[]
 for img in os.listdir(pathC):
   img=pathC+img
@@ -42,7 +43,6 @@ for img in os.listdir(pathC):
   Y=labnormed[:,:,1:]
   imagesC.append(Y)
 X=np.array(imagesG)
-print(X[0])
 Y=np.array(imagesC)
 #Input Layer
 x1=keras.Input(shape=(None,None,1))
@@ -72,10 +72,10 @@ for layer in model.layers:
 for inputs in model.inputs:
   print(inputs._name)
 model.compile(optimizer='rmsprop',loss="mse")
-model.fit(X,Y,batch_size=1,epochs=5,verbose=1)
+model.fit(X,Y,batch_size=1,epochs=10,verbose=1)
 model.evaluate(X,Y,batch_size=1)
 img="im237.jpg"
-img=pathG+img
+img="C:\\Users\\llabr\\colour\\img_colorization\\gray\\im237.jpg"
 img2=load_img(img,target_size=(100,100))
 img2=img_to_array(img2)/255
 ss=img2.shape
@@ -94,23 +94,20 @@ x=np.reshape(x,(1,100,100,1))
 output=model.predict(x)
 print(output)
 output=np.reshape(output,(100,100,2))
+output=cv2.resize(output,(ss[0],ss[1]))
 
 
 
 ABimg=output
 
-outputLAB=np.zeros((100,100,3))
-outputLAB[:,:,0]=img2[:,:,0]
+outputLAB=np.zeros((ss[0],ss[1],3))
+outputLAB[:,:,0]=img[:,:,0]
 outputLAB[:,:,1:]=ABimg
 outputLAB=(outputLAB*[100,255,255]-[0,128,128])
 print(outputLAB)
 rgbimg=lab2rgb(outputLAB)
 rgbimg=rgbimg
 print(rgbimg)
-imshow(ABimg[:,:,0])
-plt.show()
-imshow(ABimg[:,:,1])
-plt.show()
 imshow(rgbimg)
 plt.show()
 

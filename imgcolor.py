@@ -1,49 +1,41 @@
 
-from copy import deepcopy
-from re import I
+
 from keras.utils import load_img,img_to_array
-from keras.layers import Conv2D, Conv3D, UpSampling2D, InputLayer, Conv2DTranspose, Input, Reshape, concatenate
+from keras.layers import Conv2D, UpSampling2D
 from matplotlib.pyplot import imshow
 import matplotlib.pyplot as plt
 from skimage.color import rgb2lab, lab2rgb
 from skimage import color
-from skimage.transform import resize
-from skimage import util
-from time import time
 import numpy as np
 import os
-import random
 import tensorflow as tf
-from PIL import Image, ImageFile
 import keras
 import cv2 as cv2
+import pandas
 
-pathG="C:\\Users\\llabr\\colour\\img_colorization\\color\\"
+pathG="C:\\Users\\lstat\\source\\repos\\Personal Assistant\\img_colorization\\image\\"
 imagesG=[]
 for img in os.listdir(pathG):
   img=pathG+img
   img=load_img(img,target_size=(100,100))
   img = color.rgb2gray(img)
   img=img_to_array(img)/ 255
-  #imshow(img)
-  #plt.show()
 
- 
   
   imagesG.append(img)
-pathC="C:\\Users\\llabr\\colour\\img_colorization\\color\\"
+pathC="C:\\Users\\lstat\\source\\repos\\Personal Assistant\\img_colorization\color\\"
 imagesC=[]
 for img in os.listdir(pathC):
   img=pathC+img
   img=load_img(img,target_size=(100,100))
   img=img_to_array(img)/255
-  
   labimg=rgb2lab(img)
   labnormed=(labimg+[0,128,128]) / [100,255,255]
   Y=labnormed[:,:,1:]
   imagesC.append(Y)
 X=np.array(imagesG)
 Y=np.array(imagesC)
+
 #Input Layer
 x1=keras.Input(shape=(None,None,1))
 x2=Conv2D(8,(3,3),activation="relu",padding="same",strides=2)(x1)
@@ -75,19 +67,21 @@ model.compile(optimizer='rmsprop',loss="mse")
 model.fit(X,Y,batch_size=1,epochs=10,verbose=1)
 model.evaluate(X,Y,batch_size=1)
 img="im237.jpg"
-img="C:\\Users\\llabr\\colour\\img_colorization\\gray\\im237.jpg"
+img="C:\\Users\\lstat\\source\\repos\\Personal Assistant\\img_colorization\\color\\im1.jpg"
 img2=load_img(img,target_size=(100,100))
 img2=img_to_array(img2)/255
 ss=img2.shape
 img=load_img(img,target_size=(100,100))
-img = color.rgb2gray(img)
+img=color.rgb2gray(img)
 img=img_to_array(img)/255
+imshow(img)
+plt.show()
 print(img.shape)
 x=np.array(img)
 print(x.shape)
 x=np.expand_dims(x,axis=2)
 
-x=np.reshape(x,(1,100,100,1))
+x=np.reshape(x,(-1,100,100,1))
 
 
 
@@ -98,15 +92,17 @@ output=cv2.resize(output,(ss[0],ss[1]))
 
 
 
+
 ABimg=output
 
 outputLAB=np.zeros((ss[0],ss[1],3))
-outputLAB[:,:,0]=img[:,:,0]
-outputLAB[:,:,1:]=ABimg
+outputLAB[:,:,0]=img2[:,:,0]
+outputLAB[:,:,1:]=ABimg[:,:,:]
 outputLAB=(outputLAB*[100,255,255]-[0,128,128])
 print(outputLAB)
 rgbimg=lab2rgb(outputLAB)
-rgbimg=rgbimg
+imshow(outputLAB)
+plt.show()
 print(rgbimg)
 imshow(rgbimg)
 plt.show()
